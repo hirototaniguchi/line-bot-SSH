@@ -47,8 +47,8 @@ def handle_message(event):
     if "算数" in event.message.text:
         operator = ['+','-','*','/']
         ope_num = random.randint(0, 3)
-        r1 = random.randint(0, 100)
-        r2 = random.randint(0, 100)
+        r1 = random.randint(0, 10000)
+        r2 = random.randint(0, 10000)
         send_text = str(r1) + operator[ope_num] + str(r2) 
         line_bot_api.reply_message(
             event.reply_token,

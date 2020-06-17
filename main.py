@@ -42,27 +42,21 @@ def callback():
 
     return 'OK'
 
-global answer = 0
-global send_text = ""
-
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     if "算数" in event.message.text:
-        r1 = random.randint(0,100)
-        r2 = random.randint(0,100)
-        answer = r1 + r2
-        send_text = str(r1) + " + " + str(r2) 
+        operator = ['+','-','*','/']
+        ope_num = random.randint(0, 3)
+        r1 = random.randint(0, 100)
+        r2 = random.randint(0, 100)
+        send_text = str(r1) + operator[ope_num] + str(r2) 
         line_bot_api.reply_message(
             event.reply_token,
             TextSendMessage(text=send_text))
-    elif str(answer) == event.message.text:
-        line_bot_api.reply_message(
-            event.reply_token,
-            TextSendMessage(text="〇"))
     else:
         line_bot_api.reply_message(
             event.reply_token,
-            TextSendMessage(text="×"))
+            TextSendMessage(text=event.message.text))
 
 
 if __name__ == "__main__":

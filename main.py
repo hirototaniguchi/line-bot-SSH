@@ -42,6 +42,9 @@ def callback():
 
     return 'OK'
 
+answer = 0
+send_text = ""
+
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     if "算数" in event.message.text:

@@ -47,14 +47,19 @@ def handle_message(event):
     if "算数" in event.message.text:
         r1 = random.randint(0,100)
         r2 = random.randint(0,100)
+        answer = r1 + r2
         send_text = str(r1) + " + " + str(r2) 
         line_bot_api.reply_message(
             event.reply_token,
             TextSendMessage(text=send_text))
+    elif str(answer) == event.message.text:
+        line_bot_api.reply_message(
+            event.reply_token,
+            TextSendMessage(text="〇"))
     else:
         line_bot_api.reply_message(
             event.reply_token,
-            TextSendMessage(text=event.message.text))
+            TextSendMessage(text="×"))
 
 
 if __name__ == "__main__":

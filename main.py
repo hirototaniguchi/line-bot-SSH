@@ -31,7 +31,7 @@ class User(db.Model):
     answer = db.Column(db.String(80), unique=True)
 
     def __init__(self, user_id, answer):
-        self.user_id = username
+        self.user_id = user_id
         self.answer = answer
 
     def __repr__(self):

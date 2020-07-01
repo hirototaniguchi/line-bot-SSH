@@ -64,6 +64,12 @@ def handle_message(event):
     user_id = event.source.user_id
     print("ユーザー名：" + user_id)
 
+    # データベースにユーザを登録
+    if not db.session.query(User).filter(User.user_id == user_id).count():
+        reg = User(user_id, str(answer))
+        db.session.add(reg)
+        db.session.commit()
+
     if "算数" in event.message.text:
         operator = ['+','-','*','/']
         # ope_num = random.randint(0, 3)
@@ -75,10 +81,10 @@ def handle_message(event):
 
         answer = r1 + r2
 
-        if not db.session.query(User).filter(User.user_id == user_id).count():
-            reg = User(user_id, str(answer))
-            db.session.add(reg)
-            db.session.commit()
+        # Update処理
+        reg = User.query.filter_by(user_id=user_id).first()
+        reg.answer = answer
+        db.session.commit()
 
         line_bot_api.reply_message(
             event.reply_token,

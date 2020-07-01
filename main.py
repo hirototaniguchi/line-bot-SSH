@@ -61,8 +61,8 @@ def callback():
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-    userId = event.source.userId
-    print("ユーザー名：" + userId)
+    user_id = event.source.user_id
+    print("ユーザー名：" + user_id)
 
     if "算数" in event.message.text:
         operator = ['+','-','*','/']

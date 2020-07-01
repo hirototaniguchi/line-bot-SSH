@@ -84,7 +84,7 @@ def handle_message(event):
             event.reply_token,
             TextSendMessage(text=send_text))
     else:
-        answer = User.query.filter_by(User.user_id == user_id).first().answer
+        answer = User.query.filter_by(user_id = user_id).first().answer
         if event.message.text == answer:
             send_text = "正解"
         else:

@@ -88,6 +88,8 @@ def handle_message(event):
         if event.message.text == answer:
             send_text = "正解"
         else:
+            print(event.message.text)
+            print(answer)
             send_text = "間違い"
 
         line_bot_api.reply_message(

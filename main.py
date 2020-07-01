@@ -75,7 +75,7 @@ def handle_message(event):
 
         answer = r1 + r2
 
-       if not db.session.query(User).filter(User.user_id == user_id).count():
+        if not db.session.query(User).filter(User.user_id == user_id).count():
             reg = User(user_id, str(answer))
             db.session.add(reg)
             db.session.commit()

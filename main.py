@@ -63,13 +63,11 @@ def callback():
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     user_id = event.source.user_id
-    print("ユーザー名：" + user_id)
+
     with open("problem.json","r") as f:
-        problems=json.load(f)
-        print(problems)
+        problems = json.load(f)
 
     # データベースにユーザを登録
-    print(User.query.filter_by(user_id=user_id).first())
     if not User.query.filter_by(user_id=user_id).first():
         reg = User(user_id, '')
         db.session.add(reg)
@@ -77,9 +75,7 @@ def handle_message(event):
 
     if "算数" in event.message.text:
         operator = ['+','-','*','/']
-        # ope_num = random.randint(0, 3)
         ope_num = 0
-        
         r1 = random.randint(0, 10000)
         r2 = random.randint(0, 10000)
         send_text = str(r1) + operator[ope_num] + str(r2)
@@ -90,10 +86,11 @@ def handle_message(event):
         reg = User.query.filter_by(user_id=user_id).first()
         reg.answer = answer
         db.session.commit()
-
         line_bot_api.reply_message(
             event.reply_token,
-            TextSendMessage(text=send_text))
+            TextSendMessage(text=send_text)
+        )
+
     elif "クイズ" == event.message.text:
         answer = problems["problems"][0]["1"]
         reg = User.query.filter_by(user_id=user_id).first()

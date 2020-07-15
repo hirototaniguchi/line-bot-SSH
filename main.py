@@ -19,7 +19,7 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
 db = SQLAlchemy(app)
 
-#環境変数取得
+# 環境変数取得
 YOUR_CHANNEL_ACCESS_TOKEN = os.environ["YOUR_CHANNEL_ACCESS_TOKEN"]
 YOUR_CHANNEL_SECRET = os.environ["YOUR_CHANNEL_SECRET"]
 
@@ -63,7 +63,6 @@ def callback():
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     user_id = event.source.user_id
-
     with open("problem.json","r") as f:
         problems = json.load(f)
 
@@ -79,7 +78,6 @@ def handle_message(event):
         r1 = random.randint(0, 10000)
         r2 = random.randint(0, 10000)
         send_text = str(r1) + operator[ope_num] + str(r2)
-
         answer = r1 + r2
 
         # Update処理
@@ -99,23 +97,21 @@ def handle_message(event):
         send_text = problems["problems"][0]["problem"]
         line_bot_api.reply_message(
             event.reply_token,
-            TextSendMessage(text=send_text))
+            TextSendMessage(text=send_text)
+        )
 
     else:
         answer = User.query.filter_by(user_id = user_id).first().answer
         if event.message.text == answer:
             send_text = "正解"
         else:
-            print(event.message.text)
-            print(answer)
             send_text = "間違い"
 
         line_bot_api.reply_message(
             event.reply_token,
-            TextSendMessage(text=send_text))
-
+            TextSendMessage(text=send_text)
+        )
 
 if __name__ == "__main__":
-#    app.run()
     port = int(os.getenv("PORT"))
     app.run(host="0.0.0.0", port=port)

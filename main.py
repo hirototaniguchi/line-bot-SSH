@@ -69,8 +69,8 @@ def handle_message(event):
         print(problems)
 
     # データベースにユーザを登録
-    if not db.session.query(User).filter(User.user_id == user_id).count():
-        reg = User(user_id, '')
+    if notUser.query.filter_by(user_id = user_id).first():
+        reg = User(user_id, '')i
         db.session.add(reg)
         db.session.commit()
 

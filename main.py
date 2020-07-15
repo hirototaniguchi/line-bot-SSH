@@ -69,7 +69,8 @@ def handle_message(event):
         print(problems)
 
     # データベースにユーザを登録
-    if notUser.query.filter_by(user_id = user_id).first():
+    print(User.query.filter_by(user_id = user_id).first())
+    if not User.query.filter_by(user_id = user_id).first():
         reg = User(user_id, '')i
         db.session.add(reg)
         db.session.commit()

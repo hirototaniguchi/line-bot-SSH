@@ -70,7 +70,7 @@ def handle_message(event):
 
     # データベースにユーザを登録
     if not db.session.query(User).filter(User.user_id == user_id).count():
-        reg = User(user_id, str(answer))
+        reg = User(user_id, '')
         db.session.add(reg)
         db.session.commit()
 

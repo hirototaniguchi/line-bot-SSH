@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask import Flask, render_template, request
 import os
 import random
+import json
 
 from linebot import (
     LineBotApi, WebhookHandler
@@ -63,6 +64,9 @@ def callback():
 def handle_message(event):
     user_id = event.source.user_id
     print("ユーザー名：" + user_id)
+    with open("problem.json","r") as f:
+        problems=json.load(f)
+        print(problems)
 
     # データベースにユーザを登録
     if not db.session.query(User).filter(User.user_id == user_id).count():

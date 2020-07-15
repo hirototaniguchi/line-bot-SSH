@@ -93,6 +93,16 @@ def handle_message(event):
         line_bot_api.reply_message(
             event.reply_token,
             TextSendMessage(text=send_text))
+    elif "クイズ" == event.message.text:
+        answer = problems.problems[0]["1"]
+        reg = User.query.filter_by(user_id=user_id).first()
+        reg.answer = answer
+        db.session.commit()
+        send_text = problems.problems[0].problem
+        line_bot_api.reply_message(
+            event.reply_token,
+            TextSendMessage(text=send_text))
+
     else:
         answer = User.query.filter_by(user_id = user_id).first().answer
         if event.message.text == answer:

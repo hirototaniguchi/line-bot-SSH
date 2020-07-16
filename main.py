@@ -106,6 +106,7 @@ def handle_message(event):
         answer = event.message.text
         if user.answer == answer:
             answer_text = '正解'
+            print("タイプ：", type(user.correct_num))
             user.correct_num = user.correct_num + 1
         else:
             answer_text = f'間違い．正解は{user.answer}です．'

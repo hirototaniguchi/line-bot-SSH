@@ -83,7 +83,7 @@ def select_problem(subject):
     choices = [f"{i+1}: {answers[choice_indices[i]]}" for i in range(len(answers))]
     
     answer_id = choice_indices.index(0)
-    answer = f"{answer_id+1}: {answers[answer_id]}"
+    answer = f"{answer_id+1}: {answers[0]}"
     return problem, choices, answer
 
 @handler.add(MessageEvent, message=TextMessage)

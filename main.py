@@ -27,6 +27,9 @@ YOUR_CHANNEL_SECRET = os.environ["YOUR_CHANNEL_SECRET"]
 line_bot_api = LineBotApi(YOUR_CHANNEL_ACCESS_TOKEN)
 handler = WebhookHandler(YOUR_CHANNEL_SECRET)
 
+SUBJECTS = ["英単語"]
+SUBJECT_TO_FILENAME = {"英単語":"english_words.json"}
+
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.String(80), unique=True)
@@ -68,7 +71,8 @@ def callback():
     return 'OK'
 
 def select_problem(subject):
-    with open(subject, 'r', encoding='utf-8') as f:
+    file_name = SUBJECT_TO_FILENAME[subject]
+    with open(file_name, 'r', encoding='utf-8') as f:
         problems = json.load(f)
     i = random.randrange(len(problems))
     
@@ -106,7 +110,7 @@ def handle_message(event):
             answer_text = f'間違い．正解は{user.answer}です．'
         line_bot_api.reply_message(
             event.reply_token,
-            TextSendMessage(text=answer_text)
+            [TextSendMessage(text=answer_text),TextSendMessage(text=answer_text)]
         )
 
     # 結果集計
@@ -120,8 +124,7 @@ def handle_message(event):
     # 科目
     if user.question_no == -1 or user.question_no == 10:
         # 科目を聞く
-        subjects = [("英単語", "english_words.json")]
-        actions = [MessageAction(label=s[0], text=s[1]) for s in subjects]
+        actions = [MessageAction(label=s, text=s) for s in SUBJECTS]
         quick_reply = QuickReply([QuickReplyButton(action=a) for a in actions])
         line_bot_api.reply_message(
             event.reply_token,

@@ -93,11 +93,10 @@ def handle_message(event):
 
     # データベースにユーザを登録
     if not user:
-        reg = User(user_id)
-        db.session.add(reg)
+        user = User(user_id)
+        db.session.add(user)
         db.session.commit()
-    
-    user =  User.query.filter_by(user_id=user_id).first()
+
     send_messages = []
 
     # 答え合わせ

@@ -137,7 +137,6 @@ def handle_message(event):
         actions = [MessageAction(label=c, text=c) for c in choices]
         quick_reply = QuickReply([QuickReplyButton(action=a) for a in actions])
         send_messages.append(TextSendMessage(text=problem, quick_reply=quick_reply))
-        
 
     # 状態遷移
     if user.question_no == 10:

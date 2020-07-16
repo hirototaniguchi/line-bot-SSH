@@ -126,6 +126,7 @@ def handle_message(event):
             user.subject = subject
         else:
             subject = list(SUBJECT_TO_FILENAME.keys())[0]
+            print('科目：', subject)
             send_messages.append(TextSendMessage(text="不正な入力のため{subject}にしました"))
 
     # 出題

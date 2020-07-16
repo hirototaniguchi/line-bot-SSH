@@ -30,7 +30,7 @@ SUBJECT_TO_FILENAME = OrderedDict([("英単語","english_words.json")])
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.String(80), unique=True)
+    user_id = db.Column(db.String(80), unique=True, index=True)
     subject = db.Column(db.String(80))
     answer = db.Column(db.String(1024))
     question_no = db.Column(db.Integer)

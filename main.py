@@ -5,7 +5,7 @@ import os
 import random
 import json
 import linebot
-
+from collections import OrderedDict
 from linebot import (
     LineBotApi, WebhookHandler
 )
@@ -26,23 +26,22 @@ YOUR_CHANNEL_SECRET = os.environ["YOUR_CHANNEL_SECRET"]
 
 line_bot_api = LineBotApi(YOUR_CHANNEL_ACCESS_TOKEN)
 handler = WebhookHandler(YOUR_CHANNEL_SECRET)
-
-SUBJECT_TO_FILENAME = {"英単語":"english_words.json"}
+SUBJECT_TO_FILENAME = OrderedDict([("英単語","english_words.json")])
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.String(80), unique=True)
-    answer = db.Column(db.String(80))
+    subject = db.Column(db.String(80))
+    answer = db.Column(db.String(1024))
     question_no = db.Column(db.Integer)
     correct_num = db.Column(db.Integer)
-    subject = db.Column(db.String(80))
 
     def __init__(self, user_id):
         self.user_id = user_id
+        self.subject = ""
         self.answer = ""
         self.question_no = -1
         self.correct_num = 0
-        self.subject = ""
 
     def __repr__(self):
         return '<User %r>' % self.user_id
@@ -104,8 +103,7 @@ def handle_message(event):
         answer = event.message.text
         if user.answer == answer:
             answer_text = '正解'
-            print("タイプ：", type(user.correct_num))
-            user.correct_num = user.correct_num + 1
+            user.correct_num += 1
         else:
             answer_text = f'間違い．正解は{user.answer}です．'
         send_messages.append(TextSendMessage(text=answer_text))
@@ -124,7 +122,11 @@ def handle_message(event):
     elif user.question_no == 0:
         # 科目回答を確認する
         subject = event.message.text
-        user.subject = subject
+        if subject in SUBJECT_TO_FILENAME:
+            user.subject = subject
+        else:
+            subject = list(SUBJECT_TO_FILENAME.keys())[0]
+            send_messages.append(TextSendMessage(text="不正な入力のため{subject}にしました"))
 
     # 出題
     if 0 <= user.question_no and user.question_no <= 9:
@@ -138,9 +140,9 @@ def handle_message(event):
 
     # 状態遷移
     if user.question_no == 10:
+        user.subject = ""
         user.question_no = 0
         user.correct_num = 0
-        user.subject = ""
     else:
         user.question_no += 1
 
@@ -149,47 +151,6 @@ def handle_message(event):
         event.reply_token,
         send_messages
     )
-'''
-    if "算数" in event.message.text:
-        operator = ['+','-','*','/']
-        ope_num = 0
-        r1 = random.randint(0, 10000)
-        r2 = random.randint(0, 10000)
-        send_text = str(r1) + operator[ope_num] + str(r2)
-        answer = r1 + r2
-
-        # Update処理
-        reg = User.query.filter_by(user_id=user_id).first()
-        reg.answer = answer
-        db.session.commit()
-        line_bot_api.reply_message(
-            event.reply_token,
-            TextSendMessage(text=send_text)
-        )
-
-    elif "クイズ" == event.message.text:
-        answer = problems["problems"][0]["1"]
-        reg = User.query.filter_by(user_id=user_id).first()
-        reg.answer = answer
-        db.session.commit()
-        send_text = problems["problems"][0]["problem"]
-        line_bot_api.reply_message(
-            event.reply_token,
-            TextSendMessage(text=send_text)
-        )
-
-    else:
-        answer = User.query.filter_by(user_id = user_id).first().answer
-        if event.message.text == answer:
-            send_text = "正解"
-        else:
-            send_text = "間違い"
-
-        line_bot_api.reply_message(
-            event.reply_token,
-            TextSendMessage(text=send_text)
-        )
-'''
 
 if __name__ == "__main__":
     port = int(os.getenv("PORT"))

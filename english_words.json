@@ -1,0 +1,16 @@
+[
+    {"problem":"投げかける","answers":["cast","interpret","deprive of","classify"]},
+    {"problem":"のせいだとされる", "answers": ["is attributed to", "be obliged to", "deserve to be", "forbid to"]},
+    {"problem":"凍えて", "answers": ["freeze", "entertain", "strain", "fee"]},
+    {"problem":"解決する", "answers": ["resolve", "prejudice", "undergo", "resort"]},
+    {"problem":"受け入れる", "answers": ["embrace", "withdraw", "enterprise", "eliminate"]},
+    {"problem":"展示する", "answers": ["exhibit", "interpret", "restrict", "exaggerate"]},
+    {"problem":"転換する", "answers": ["convert", "invade", "divorse", "translate"]},
+    {"problem":"怯えさせる", "answers": ["scare", "ensure", "assure", "prey"]},
+    {"problem":"を占める", "answers": ["constitute", "substitute", "annoy", "accomplish"]},
+    {"problem":"任命される", "answers": ["be apppointed to", "be composed of", "be obliged to", "be elected"]},
+    {"problem":"を縫う", "answers": ["sew", "sum", "leap", "ruin"]},
+    {"problem":"割り当てる", "answers": ["assign to", "attached to", "correspond to", "ceased to"]},
+    {"problem":"うなずいて", "answers": ["nod", "lean", "bow", "tap"]},
+    {"problem":"選ばれる", "answers": ["be elected", "b", "c", "d"]}
+]

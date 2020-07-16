@@ -4,6 +4,7 @@ from flask import Flask, render_template, request
 import os
 import random
 import json
+import linebot
 
 from linebot import (
     LineBotApi, WebhookHandler
@@ -12,7 +13,7 @@ from linebot.exceptions import (
     InvalidSignatureError
 )
 from linebot.models import (
-    MessageEvent, TextMessage, TextSendMessage,
+    MessageEvent, TextMessage, TextSendMessage, QuickReply, MessageAction, QuickReplyButton
 )
 
 app = Flask(__name__)
@@ -29,11 +30,17 @@ handler = WebhookHandler(YOUR_CHANNEL_SECRET)
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.String(80), unique=True)
-    answer = db.Column(db.String(80), unique=True)
+    answer = db.Column(db.String(80))
+    question_no = db.Column(db.Integer)
+    correct_num = db.column(db.Integer)
+    subject = db.Column(db.String(80))
 
-    def __init__(self, user_id, answer):
+    def __init__(self, user_id):
         self.user_id = user_id
-        self.answer = answer
+        self.answer = ""
+        self.question_no = -1
+        self.correct_num = 0
+        self.subject = ""
 
     def __repr__(self):
         return '<User %r>' % self.user_id
@@ -60,18 +67,94 @@ def callback():
 
     return 'OK'
 
+def select_problem(subject):
+    with open(subject, 'r', encoding='utf-8') as f:
+        problems = json.load(f)
+    i = random.randrange(len(problems))
+    
+    problem = problems[i]['problem']
+    answers = problems[i]['answers']
+    choice_indices = list(range(len(answers)))
+    random.shuffle(choice_indices)
+    choices = [f"{i+1}: {answers[choice_indices[i]]}" for i in range(len(answers))]
+    
+    answer_id = choice_indices.index(0)
+    answer = f"{answer_id+1}: {answers[answer_id]}"
+    return problem, choices, answer
+
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     user_id = event.source.user_id
-    with open("problem.json","r") as f:
-        problems = json.load(f)
+    user =  User.query.filter_by(user_id=user_id).first()
 
     # データベースにユーザを登録
-    if not User.query.filter_by(user_id=user_id).first():
-        reg = User(user_id, '')
+    if not user:
+        reg = User(user_id)
         db.session.add(reg)
         db.session.commit()
+    
+    user =  User.query.filter_by(user_id=user_id).first()
 
+    # 答え合わせ
+    if 1 <= user.question_no and user.question_no <= 10:
+        # 回答の確認
+        answer = event.message.text
+        if user.answer == answer:
+            answer_text = '正解！'
+            user.correct_num += 1
+        else:
+            answer_text = f'間違い．正解は{user.answer}です．'
+        line_bot_api.reply_message(
+            event.reply_token,
+            TextSendMessage(text=answer_text)
+        )
+
+    # 結果集計
+    if user.question_no == 10:
+        result_text = f'10問中{user.correct_num}問に正解しました'
+        line_bot_api.reply_message(
+            event.reply_token,
+            TextSendMessage(text=result_text)
+        )
+
+    # 科目
+    if user.question_no == -1 or user.question_no == 10:
+        # 科目を聞く
+        subjects = [("英単語", "english_words.json")]
+        actions = [MessageAction(label=s[0], text=s[1]) for s in subjects]
+        quick_reply = QuickReply([QuickReplyButton(action=a) for a in actions])
+        line_bot_api.reply_message(
+            event.reply_token,
+            TextSendMessage(text="出題分野を選んでください", quick_reply=quick_reply)
+        )
+    elif user.question_no == 0:
+        # 科目回答を確認する
+        subject = event.message.text
+        user.subject = subject
+
+    # 出題
+    if 0 <= user.question_no and user.question_no <= 9:
+        problem, choices, answer = select_problem(user.subject)
+        problem = f'問{user.question_no+1}: ' + problem
+        user.answer = answer
+        actions = [MessageAction(label=c, text=c) for c in choices]
+        quick_reply = QuickReply([QuickReplyButton(action=a) for a in actions])
+        line_bot_api.reply_message(
+            event.reply_token,
+            TextSendMessage(text=problem, quick_reply=quick_reply)
+        )
+
+    # 状態遷移
+    if user.question_no == 10:
+        user.question_no = 0
+        user.correct_num = 0
+        user.subject = ""
+    else:
+        user.question_no += 1
+
+    db.session.commit()
+
+'''
     if "算数" in event.message.text:
         operator = ['+','-','*','/']
         ope_num = 0
@@ -111,6 +194,7 @@ def handle_message(event):
             event.reply_token,
             TextSendMessage(text=send_text)
         )
+'''
 
 if __name__ == "__main__":
     port = int(os.getenv("PORT"))

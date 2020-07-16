@@ -98,6 +98,7 @@ def handle_message(event):
         db.session.commit()
     
     user =  User.query.filter_by(user_id=user_id).first()
+    send_messages = []
 
     # 答え合わせ
     if 1 <= user.question_no and user.question_no <= 10:
@@ -108,28 +109,19 @@ def handle_message(event):
             user.correct_num += 1
         else:
             answer_text = f'間違い．正解は{user.answer}です．'
-        line_bot_api.reply_message(
-            event.reply_token,
-            [TextSendMessage(text=answer_text),TextSendMessage(text=answer_text)]
-        )
+        send_messages.append(TextSendMessage(text=answer_text))
 
     # 結果集計
     if user.question_no == 10:
         result_text = f'10問中{user.correct_num}問に正解しました'
-        line_bot_api.reply_message(
-            event.reply_token,
-            TextSendMessage(text=result_text)
-        )
+        send_messages.append(TextSendMessage(text=result_text))
 
     # 科目
     if user.question_no == -1 or user.question_no == 10:
         # 科目を聞く
         actions = [MessageAction(label=s, text=s) for s in SUBJECTS]
         quick_reply = QuickReply([QuickReplyButton(action=a) for a in actions])
-        line_bot_api.reply_message(
-            event.reply_token,
-            TextSendMessage(text="出題分野を選んでください", quick_reply=quick_reply)
-        )
+        send_messages.append(TextSendMessage(text="出題分野を選んでください", quick_reply=quick_reply))
     elif user.question_no == 0:
         # 科目回答を確認する
         subject = event.message.text
@@ -142,10 +134,8 @@ def handle_message(event):
         user.answer = answer
         actions = [MessageAction(label=c, text=c) for c in choices]
         quick_reply = QuickReply([QuickReplyButton(action=a) for a in actions])
-        line_bot_api.reply_message(
-            event.reply_token,
-            TextSendMessage(text=problem, quick_reply=quick_reply)
-        )
+        send_messages.append(TextSendMessage(text=problem, quick_reply=quick_reply))
+        
 
     # 状態遷移
     if user.question_no == 10:
@@ -156,7 +146,10 @@ def handle_message(event):
         user.question_no += 1
 
     db.session.commit()
-
+    line_bot_api.reply_message(
+        event.reply_token,
+        send_messages
+    )
 '''
     if "算数" in event.message.text:
         operator = ['+','-','*','/']

@@ -35,7 +35,7 @@ class User(db.Model):
     user_id = db.Column(db.String(80), unique=True)
     answer = db.Column(db.String(80))
     question_no = db.Column(db.Integer)
-    correct_num = db.column(db.Integer)
+    correct_num = db.Column(db.Integer)
     subject = db.Column(db.String(80))
 
     def __init__(self, user_id):

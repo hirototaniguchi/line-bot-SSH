@@ -27,7 +27,6 @@ YOUR_CHANNEL_SECRET = os.environ["YOUR_CHANNEL_SECRET"]
 line_bot_api = LineBotApi(YOUR_CHANNEL_ACCESS_TOKEN)
 handler = WebhookHandler(YOUR_CHANNEL_SECRET)
 
-SUBJECTS = ["英単語"]
 SUBJECT_TO_FILENAME = {"英単語":"english_words.json"}
 
 class User(db.Model):
@@ -119,7 +118,7 @@ def handle_message(event):
     # 科目
     if user.question_no == -1 or user.question_no == 10:
         # 科目を聞く
-        actions = [MessageAction(label=s, text=s) for s in SUBJECTS]
+        actions = [MessageAction(label=s, text=s) for s in SUBJECT_TO_FILENAME.keys()]
         quick_reply = QuickReply([QuickReplyButton(action=a) for a in actions])
         send_messages.append(TextSendMessage(text="出題分野を選んでください", quick_reply=quick_reply))
     elif user.question_no == 0:

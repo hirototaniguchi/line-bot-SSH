@@ -118,7 +118,7 @@ def handle_message(event):
         # 科目を聞く
         actions = [MessageAction(label=s, text=s) for s in SUBJECT_TO_FILENAME.keys()]
         quick_reply = QuickReply([QuickReplyButton(action=a) for a in actions])
-        send_messages.append(TextSendMessage(text=f"出題分野を選んでください", quick_reply=quick_reply))
+        send_messages.append(TextSendMessage(text="出題分野を選んでください", quick_reply=quick_reply))
     elif user.question_no == 0:
         # 科目回答を確認する
         subject = event.message.text
@@ -127,7 +127,7 @@ def handle_message(event):
         else:
             subject = list(SUBJECT_TO_FILENAME.keys())[0]
             user.subject = subject
-            send_messages.append(TextSendMessage(text="不正な入力のため{subject}にしました"))
+            send_messages.append(TextSendMessage(text=f"不正な入力のため{subject}にしました"))
 
     # 出題
     if 0 <= user.question_no and user.question_no <= 9:

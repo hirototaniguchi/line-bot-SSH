@@ -1,0 +1,24 @@
+[
+    {"problem":"さるは","answers":["それというのも実は","嫌だ","残念だ","c"]},
+    {"problem":"うたて", "answers": ["嫌だ", "be obliged to", "deserve to be", "forbid to"]},
+    {"problem":"うたて", "answers": ["情けなく", "entertain", "strain", "fee"]},
+    {"problem":"ここら", "answers": ["たくさん", "prejudice", "undergo", "resort"]},
+    {"problem":"さるは", "answers": ["けれども", "withdraw", "enterprise", "eliminate"]},
+    {"problem":"やはら", "answers": ["静かに", "あ", "restrict", "exaggerate"]},
+    {"problem":"かつ", "answers": ["一方では", "invade", "divorse", "translate"]},
+    {"problem":"かつがつ", "answers": ["とりあえず", "ensure", "assure", "prey"]},
+    {"problem":"かつがつ", "answers": ["どうにかして", "substitute", "annoy", "accomplish"]},
+    {"problem":"おのがじし", "answers": ["おいおい", "be composed of", "be obliged to", "be elected"]},
+    {"problem":"ふりはえて", "answers": ["わざわざ", "sum", "leap", "ruin"]},
+    {"problem":"あな", "answers": ["ああ～だなぁ", "attached to", "correspond to", "ceased to"]},
+    {"problem":"いで", "answers": ["さあ～しよう", "lean", "bow", "tap"]},
+    {"problem":"いざ", "answers": ["さあ～しよう", "b", "c", "d"]},
+    {"problem":"あらぬ", "answers": ["他の", "good-bye", "come on", "yes", "no"]},
+    {"problem":"あなかま", "answers": ["ああうるさい", "good-bye", "come on", "yes", "no"]},
+    {"problem":"ありし", "answers": ["昔の", "good-bye", "come on", "yes", "no"]},
+    {"problem":"ありつる", "answers": ["先ほどの", "good-bye", "come on", "yes", "no"]},
+    {"problem":"あれか", "answers": ["茫然自失", "good-bye", "come on", "yes", "no"]},
+    {"problem":"いざたまへ", "answers": ["さあいらっしゃい", "good-bye", "come on", "yes", "no"]},
+    {"problem":"いまはかぎり", "answers": ["もはやこれまで", "good-bye", "come on", "yes", "no"]}
+
+]

@@ -26,7 +26,7 @@ YOUR_CHANNEL_SECRET = os.environ["YOUR_CHANNEL_SECRET"]
 
 line_bot_api = LineBotApi(YOUR_CHANNEL_ACCESS_TOKEN)
 handler = WebhookHandler(YOUR_CHANNEL_SECRET)
-SUBJECT_TO_FILENAME = OrderedDict([("英単語","english_words.json"), ("和訳", "wayaku.json")])
+SUBJECT_TO_FILENAME = OrderedDict([("英単語","english_words.json"), ("和訳", "wayaku.json"), ("古文", "kobun.json")])
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)

@@ -105,7 +105,7 @@ def handle_message(event):
             answer_text = '正解'
             user.correct_num += 1
         else:
-            answer_text = f'間違い．正解は{user.answer}です．'
+            answer_text = f'間違い．正解は「{user.answer}」です．'
         send_messages.append(TextSendMessage(text=answer_text))
 
     # 結果集計

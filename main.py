@@ -4,6 +4,7 @@ from flask import Flask, render_template, request
 import os
 import random
 import json
+import time
 import linebot
 from collections import OrderedDict
 from linebot import (
@@ -39,6 +40,8 @@ class User(db.Model):
     answer = db.Column(db.String(1024))
     question_no = db.Column(db.Integer)
     correct_num = db.Column(db.Integer)
+    start_time = db.Column(db.Integer)
+    future_problems = db.Column(db.String(2048))
 
     def __init__(self, user_id):
         self.user_id = user_id
@@ -46,6 +49,8 @@ class User(db.Model):
         self.answer = ""
         self.question_no = -1
         self.correct_num = 0
+        self.start_time = 0
+        self.future_problems = "{}"
 
     def __repr__(self):
         return '<User %r>' % self.user_id
@@ -72,11 +77,25 @@ def callback():
 
     return 'OK'
 
-def select_problem(subject):
+# 間違えた問題は10問周期で出題する
+def select_problem(user):
+    subject = user.subject
     file_name = SUBJECT_TO_FILENAME[subject]
     with open(file_name, 'r', encoding='utf-8') as f:
         problems = json.load(f)
-    i = random.randrange(len(problems))
+
+    subject2next_problems = json.loads(user.future_problems)
+    if subject not in subject2next_problems:
+        subject2next_problems[subject] = [-1] * 10 # 10問周期で出題する
+    
+    next_problems = subject2next_problems[subject]
+    i = next_problems[0]
+    if i == -1: # 正解した問題は出題せずにランダムで出題する
+        i = random.randrange(len(problems))
+    next_problems.pop(0)
+    next_problems.append(i)
+    subject2next_problems[subject] = next_problems
+    user.future_problems = json.dumps(subject2next_problems)
     
     problem = problems[i]['problem']
     answers = problems[i]['answers']
@@ -87,6 +106,16 @@ def select_problem(subject):
     answer_id = choice_indices.index(0)
     answer = f"{answer_id+1}: {answers[0]}"
     return problem, choices, answer
+
+# 正解した問題は-1で上書きしておいて，select_problemでランダムに出題する
+def randomize_last_future_problem(user):
+    subject = user.subject
+    subject2next_problems = json.loads(user.future_problems)
+    if subject not in subject2next_problems:
+        subject2next_problems[subject] = [-1] * 10 # 10問周期で出題する
+    
+    subject2next_problems[subject][-1] = -1
+    user.future_problems = json.dumps(subject2next_problems)
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
@@ -108,13 +137,15 @@ def handle_message(event):
         if user.answer == answer:
             answer_text = '正解'
             user.correct_num += 1
+            randomize_last_future_problem(user)
         else:
             answer_text = f'間違い．正解は「{user.answer}」です．'
         send_messages.append(TextSendMessage(text=answer_text))
 
     # 結果集計
     if user.question_no == 10:
-        result_text = f'10問中{user.correct_num}問に正解しました'
+        result_text = f'10問中{user.correct_num}問に正解しました．'
+        result_text += f'経過時間は{(time.time() - user.start_time):.0f}秒でした．'
         send_messages.append(TextSendMessage(text=result_text))
 
     # 科目
@@ -132,10 +163,11 @@ def handle_message(event):
             subject = list(SUBJECT_TO_FILENAME.keys())[0]
             user.subject = subject
             send_messages.append(TextSendMessage(text=f"不正な入力のため{subject}にしました"))
-
+        # 時間計測スタート
+        user.start_time = time.time()
     # 出題
     if 0 <= user.question_no and user.question_no <= 9:
-        problem, choices, answer = select_problem(user.subject)
+        problem, choices, answer = select_problem(user)
         problem = f'問{user.question_no+1}: ' + problem
         user.answer = answer
         actions = [MessageAction(label=c, text=c) for c in choices]

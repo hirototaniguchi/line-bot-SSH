@@ -38,6 +38,7 @@ class User(db.Model):
     user_id = db.Column(db.String(80), unique=True, index=True)
     subject = db.Column(db.String(80))
     answer = db.Column(db.String(1024))
+    comment = db.Column(db.String(2048))
     question_no = db.Column(db.Integer)
     correct_num = db.Column(db.Integer)
     start_time = db.Column(db.Integer)
@@ -47,6 +48,7 @@ class User(db.Model):
         self.user_id = user_id
         self.subject = ""
         self.answer = ""
+        self.comment = ""
         self.question_no = -1
         self.correct_num = 0
         self.start_time = 0
@@ -99,13 +101,16 @@ def select_problem(user):
     
     problem = problems[i]['problem']
     answers = problems[i]['answers']
+    comment = ""
+    if 'comment' in problems[i]:
+        comment = problems[i]['comment']
     choice_indices = list(range(len(answers)))
     random.shuffle(choice_indices)
     choices = [f"{i+1}: {answers[choice_indices[i]]}" for i in range(len(answers))]
     
     answer_id = choice_indices.index(0)
     answer = f"{answer_id+1}: {answers[0]}"
-    return problem, choices, answer
+    return problem, choices, answer, comment
 
 # 正解した問題は-1で上書きしておいて，select_problemでランダムに出題する
 def randomize_last_future_problem(user):
@@ -142,6 +147,10 @@ def handle_message(event):
             answer_text = f'間違い．正解は「{user.answer}」です．'
         send_messages.append(TextSendMessage(text=answer_text))
 
+        if user.comment:
+            comment_text = f'解説: {user.comment}．'
+            send_messages.append(TextSendMessage(text=comment_text))
+
     # 結果集計
     if user.question_no == 10:
         result_text = f'10問中{user.correct_num}問に正解しました．'
@@ -167,9 +176,10 @@ def handle_message(event):
         user.start_time = time.time()
     # 出題
     if 0 <= user.question_no and user.question_no <= 9:
-        problem, choices, answer = select_problem(user)
+        problem, choices, answer, comment = select_problem(user)
         problem = f'問{user.question_no+1}: ' + problem
         user.answer = answer
+        user.comment = comment
         actions = [MessageAction(label=c, text=c) for c in choices]
         quick_reply = QuickReply([QuickReplyButton(action=a) for a in actions])
         send_messages.append(TextSendMessage(text=problem, quick_reply=quick_reply))

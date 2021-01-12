@@ -1,17 +1,19 @@
 # 開発の準備
-* herokuとLINE Developerの登録，その他ライブラリなどの準備
-    * https://qiita.com/shimajiri/items/cf7ccf69d184fdb2fb26
+* クローン
+    ```
+    git clone https://github.com/fpsbpkm/line-bot-SSH
+    ```
+* 必要パッケージのインストール（クローンしたディレクトリ内で以下を実行）
+    ```
+    pipenv install
+    ```
+* herokuとLINE Developerの登録
+    * Heroku：https://jp.heroku.com/
+    * LINE Developer：https://developers.line.biz/ja/services/messaging-api/
+    * 参考になるサイト：https://qiita.com/shimajiri/items/cf7ccf69d184fdb2fb26
 * データベースの準備
-    * https://qiita.com/takechanman1228/items/917e2eb47fa21f866cb4
+    * 参考になるサイト：https://qiita.com/takechanman1228/items/917e2eb47fa21f866cb4
         * 記事内の「flask.ext.sqlalchemy」は非推奨であるため，代わりに「flask_sqlalchemy」を使う
-# 挨拶メッセージの設定
-* LINE Developersにログインし，対象Providerの「Messaging API」を開く
-    ![messagin-API](https://user-images.githubusercontent.com/32231297/87848931-a6555200-c91f-11ea-8445-ef683db8e762.png)
-* 「LINE Official Account features」の「Greeting messages」の「Edit」をクリックする
-    ![edit](https://user-images.githubusercontent.com/32231297/87848965-faf8cd00-c91f-11ea-9838-11e334058674.png)
-* あいさつメッセージをオンにし，「あいさつメッセージ設定」をクリックしてメッセージを設定する
-    * 例：「クイズを開始するにはメッセージを送ってください！」
-    ![on](https://user-images.githubusercontent.com/32231297/87849056-896d4e80-c920-11ea-9e61-9b6a607a9761.png)
 
 # 出題問題の追加
 ## 既存の分野の問題を追加する場合
@@ -29,7 +31,19 @@
         {"problem":"展示する", "answers": ["exhibit", "interpret", "restrict", "exaggerate"]}
     ]
     ```
-## 新しい分野を追加する場合
+## 解説や補足の追加
+* 以下のように「comment」属性を追加すれば，問題ごとに補足を設定できます．（必須ではありません）
+    ```json
+        [
+            {"problem":"投げかける","answers":["cast","interpret","deprive of","classify"], "comment": "ここに解説を書く"},
+            {"problem":"のせいだとされる", "answers": ["is attributed to", "be obliged to", "deserve to be", "forbid to"], "comment": "ここに解説を書く"},
+            {"problem":"凍えて", "answers": ["freeze", "entertain", "strain", "fee"], "comment": "ここに解説を書く"},
+            {"problem":"解決する", "answers": ["resolve", "prejudice", "undergo", "resort"], "comment": "ここに解説を書く"},
+            {"problem":"受け入れる", "answers": ["embrace", "withdraw", "enterprise", "eliminate"], "comment": "ここに解説を書く"}
+        ]
+    ```
+
+## 新しい科目を追加する場合
 1. main.pyが存在するファイル内に，新しいjsonファイルを作成する（**選択肢の1つ目を正解にしなければならないため注意**）
     * 例：「chemistry.json」
         ```json
@@ -47,3 +61,11 @@
         SUBJECT_TO_FILENAME = OrderedDict([("英単語","english_words.json"), ("化学", "chemistry.json")])
         ```
 
+# 挨拶メッセージの設定
+* LINE Developersにログインし，対象Providerの「Messaging API」を開く
+    ![messagin-API](https://user-images.githubusercontent.com/32231297/87848931-a6555200-c91f-11ea-8445-ef683db8e762.png)
+* 「LINE Official Account features」の「Greeting messages」の「Edit」をクリックする
+    ![edit](https://user-images.githubusercontent.com/32231297/87848965-faf8cd00-c91f-11ea-9838-11e334058674.png)
+* あいさつメッセージをオンにし，「あいさつメッセージ設定」をクリックしてメッセージを設定する
+    * 例：「クイズを開始するにはメッセージを送ってください！」
+    ![on](https://user-images.githubusercontent.com/32231297/87849056-896d4e80-c920-11ea-9e61-9b6a607a9761.png)
